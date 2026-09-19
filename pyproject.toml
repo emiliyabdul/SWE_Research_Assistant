@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "researcher"
+version = "0.1.0"
+description = "Async Research Assistant — SE layer around the provided ai/ package (AI-ENG-110 final project)"
+requires-python = ">=3.11"
+
+# The provided ai/ package is installed alongside (unmodified) so that
+# `import ai` works regardless of the current working directory.
+[tool.setuptools]
+packages = [
+    "researcher",
+    "researcher.services",
+    "researcher.core",
+    "researcher.concurrency",
+    "researcher.storage",
+    "ai",
+    "ai.providers",
+]
+
+[tool.setuptools.package-dir]
+researcher = "src/researcher"
+ai = "ai"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "strict"
+
+[tool.ruff]
+line-length = 110
+# Provided course files are a contract and are not ours to lint or reformat.
+extend-exclude = ["ai", "tests/test_ai_smoke.py", "tests/conftest.py"]
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+
+# The provided ai/ package is a course contract, not ours to fix or annotate.
+[[tool.mypy.overrides]]
+module = "ai.*"
+ignore_errors = true
+
+[tool.coverage.run]
+source = ["src/researcher"]

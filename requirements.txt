@@ -1,0 +1,27 @@
+# Pinned runtime + test dependencies (SE layer + provided ai/ package).
+# Regenerate pins deliberately; do not float versions.
+
+# --- provided ai/ package runtime ---
+httpx==0.28.1
+numpy==2.5.3
+pydantic==2.13.5
+# LLM SDK for the configured provider. The extras markers in
+# requirements-ai.txt are never activated by `pip install -r`, so the
+# provider SDK must be pinned here explicitly. anthropic matches the
+# default LLM_PROVIDER in .env.example; google-genai is kept for anyone
+# switching LLM_PROVIDER=gemini.
+anthropic==0.69.0
+google-genai==2.23.0
+
+# --- SE layer ---
+pydantic-settings==2.15.0
+click==8.5.0
+tenacity==9.1.4
+aiosqlite==0.22.1
+python-dotenv==1.2.3
+ddgs==9.16.0
+
+# --- tests (offline only) ---
+pytest==9.1.1
+pytest-asyncio==1.4.0
+pytest-cov==7.1.0
