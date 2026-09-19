@@ -1,0 +1,13 @@
+Q: What were the main causes of the 2008 financial crisis?
+
+A: Based on the available sources, here is a synthesized answer that draws from multiple references [1], [2], [3]. The sources broadly agree on the main points; differences in emphasis are noted in each reference [1].
+
+References:
+  [1] (wikipedia) Wikipedia overview: What were the main causes of the 2008 financial crisis?
+      https://example.org/wikipedia/1958
+  [2] (arxiv) arXiv survey: What were the main causes of the 2008 financial crisis?
+      https://example.org/arxiv/1958
+  [3] (web) Web article: What were the main causes of the 2008 financial crisis?
+      https://example.org/web/1958
+
+(3/3 sources, 0.15s)

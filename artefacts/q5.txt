@@ -1,0 +1,13 @@
+Q: How does CRISPR-Cas9 gene editing work at a molecular level?
+
+A: Based on the available sources, here is a synthesized answer that draws from multiple references [1], [2], [3]. The sources broadly agree on the main points; differences in emphasis are noted in each reference [1].
+
+References:
+  [1] (wikipedia) Wikipedia overview: How does CRISPR-Cas9 gene editing work at a molecular level?
+      https://example.org/wikipedia/7068
+  [2] (arxiv) arXiv survey: How does CRISPR-Cas9 gene editing work at a molecular level?
+      https://example.org/arxiv/7068
+  [3] (web) Web article: How does CRISPR-Cas9 gene editing work at a molecular level?
+      https://example.org/web/7068
+
+(3/3 sources, 0.16s)

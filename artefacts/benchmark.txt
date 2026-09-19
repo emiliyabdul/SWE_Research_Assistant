@@ -1,0 +1,12 @@
+
+Question                                                   Sequential  Parallel  Speedup  Sources
+--------------------------------------------------------------------------------------------------
+What is photosynthesis and what are its main stages?            0.45s     0.15s    2.98x     3/3
+How do transformer-based language models handle long co...      0.45s     0.15s    2.99x     3/3
+What were the main causes of the 2008 financial crisis?         0.45s     0.15s    2.97x     3/3
+What is the current state of fusion energy research?            0.45s     0.15s    2.97x     3/3
+How does CRISPR-Cas9 gene editing work at a molecular l...      0.45s     0.15s    2.97x     3/3
+--------------------------------------------------------------------------------------------------
+TOTAL (5 questions, 3 run(s) each)                              2.27s     0.76s    2.98x
+
+mode=offline | semaphore=3 | per-source timeout=10.0s | cache=disabled for both modes

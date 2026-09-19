@@ -1,0 +1,52 @@
+{
+  "question": "What is the current state of fusion energy research?",
+  "answer": {
+    "question": "What is the current state of fusion energy research?",
+    "answer": "Based on the available sources, here is a synthesized answer that draws from multiple references [1], [2], [3]. The sources broadly agree on the main points; differences in emphasis are noted in each reference [1].",
+    "citations": [
+      {
+        "index": 1,
+        "title": "Wikipedia overview: What is the current state of fusion energy research?",
+        "url": "https://example.org/wikipedia/1104",
+        "origin": "wikipedia"
+      },
+      {
+        "index": 2,
+        "title": "arXiv survey: What is the current state of fusion energy research?",
+        "url": "https://example.org/arxiv/1104",
+        "origin": "arxiv"
+      },
+      {
+        "index": 3,
+        "title": "Web article: What is the current state of fusion energy research?",
+        "url": "https://example.org/web/1104",
+        "origin": "web"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "source": "wikipedia",
+      "status": "ok",
+      "elapsed_seconds": 0.151,
+      "error": null,
+      "excerpts": 1
+    },
+    {
+      "source": "arxiv",
+      "status": "ok",
+      "elapsed_seconds": 0.151,
+      "error": null,
+      "excerpts": 1
+    },
+    {
+      "source": "web",
+      "status": "ok",
+      "elapsed_seconds": 0.151,
+      "error": null,
+      "excerpts": 1
+    }
+  ],
+  "elapsed_seconds": 0.154,
+  "degraded": false
+}

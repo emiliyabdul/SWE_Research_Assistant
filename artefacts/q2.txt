@@ -1,0 +1,13 @@
+Q: How do transformer-based language models handle long context windows?
+
+A: Based on the available sources, here is a synthesized answer that draws from multiple references [1], [2], [3]. The sources broadly agree on the main points; differences in emphasis are noted in each reference [1].
+
+References:
+  [1] (wikipedia) Wikipedia overview: How do transformer-based language models handle long context
+      https://example.org/wikipedia/7661
+  [2] (arxiv) arXiv survey: How do transformer-based language models handle long context
+      https://example.org/arxiv/7661
+  [3] (web) Web article: How do transformer-based language models handle long context
+      https://example.org/web/7661
+
+(3/3 sources, 0.15s)

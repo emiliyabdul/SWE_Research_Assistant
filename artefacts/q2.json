@@ -1,0 +1,52 @@
+{
+  "question": "How do transformer-based language models handle long context windows?",
+  "answer": {
+    "question": "How do transformer-based language models handle long context windows?",
+    "answer": "Based on the available sources, here is a synthesized answer that draws from multiple references [1], [2], [3]. The sources broadly agree on the main points; differences in emphasis are noted in each reference [1].",
+    "citations": [
+      {
+        "index": 1,
+        "title": "Wikipedia overview: How do transformer-based language models handle long context",
+        "url": "https://example.org/wikipedia/8015",
+        "origin": "wikipedia"
+      },
+      {
+        "index": 2,
+        "title": "arXiv survey: How do transformer-based language models handle long context",
+        "url": "https://example.org/arxiv/8015",
+        "origin": "arxiv"
+      },
+      {
+        "index": 3,
+        "title": "Web article: How do transformer-based language models handle long context",
+        "url": "https://example.org/web/8015",
+        "origin": "web"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "source": "wikipedia",
+      "status": "ok",
+      "elapsed_seconds": 0.151,
+      "error": null,
+      "excerpts": 1
+    },
+    {
+      "source": "arxiv",
+      "status": "ok",
+      "elapsed_seconds": 0.151,
+      "error": null,
+      "excerpts": 1
+    },
+    {
+      "source": "web",
+      "status": "ok",
+      "elapsed_seconds": 0.151,
+      "error": null,
+      "excerpts": 1
+    }
+  ],
+  "elapsed_seconds": 0.155,
+  "degraded": false
+}
