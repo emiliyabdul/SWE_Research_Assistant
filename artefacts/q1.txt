@@ -1,0 +1,13 @@
+Q: What is photosynthesis and what are its main stages?
+
+A: Based on the available sources, here is a synthesized answer that draws from multiple references [1], [2], [3]. The sources broadly agree on the main points; differences in emphasis are noted in each reference [1].
+
+References:
+  [1] (wikipedia) Wikipedia overview: What is photosynthesis and what are its main stages?
+      https://example.org/wikipedia/4702
+  [2] (arxiv) arXiv survey: What is photosynthesis and what are its main stages?
+      https://example.org/arxiv/4702
+  [3] (web) Web article: What is photosynthesis and what are its main stages?
+      https://example.org/web/4702
+
+(3/3 sources, 0.16s)

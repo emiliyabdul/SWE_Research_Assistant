@@ -1,0 +1,13 @@
+Q: What is the current state of fusion energy research?
+
+A: Based on the available sources, here is a synthesized answer that draws from multiple references [1], [2], [3]. The sources broadly agree on the main points; differences in emphasis are noted in each reference [1].
+
+References:
+  [1] (wikipedia) Wikipedia overview: What is the current state of fusion energy research?
+      https://example.org/wikipedia/5605
+  [2] (arxiv) arXiv survey: What is the current state of fusion energy research?
+      https://example.org/arxiv/5605
+  [3] (web) Web article: What is the current state of fusion energy research?
+      https://example.org/web/5605
+
+(3/3 sources, 0.16s)
