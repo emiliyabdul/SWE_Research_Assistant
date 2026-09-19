@@ -2,7 +2,7 @@
 
 > Ask a research question; the system queries Wikipedia, arXiv and a web-search API **in parallel**, then synthesizes a single answer with inline `[N]` citations — wrapped in a production-grade SE layer: typed config, TTL cache, bounded concurrency, retries, validation, logging, tests, and Docker.
 
-**Team:** Azeri40 · emiliyabdul · thuseynowa  •  **Topic:** 4 — Async Research Assistant  •  **Course:** AI-ENG-110 Software Engineering, AI Academy
+**Team:** Emiliya Abdulhalimova (emiliyabdul) · Tahmina Huseynova (thuseynowa) · Tural Usubov (Azeri40)  •  **Topic:** 4 — Async Research Assistant  •  **Course:** AI-ENG-110 Software Engineering, AI Academy
 
 ---
 
@@ -10,8 +10,8 @@
 
 ```bash
 # 1. Clone & install
-git clone https://github.com/Azeri40/swe_final_new
-cd swe_final_new
+git clone https://github.com/emiliyabdul/SWE_Research_Assistant
+cd SWE_Research_Assistant
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
@@ -23,7 +23,7 @@ cp .env.example .env               # then fill in real API keys
 
 # 3. Run the tests
 pytest tests/test_ai_smoke.py -v   # provided smoke tests (16)
-pytest --cov                       # full suite (125 tests, all offline)
+pytest --cov                       # full suite (108 tests, all offline)
 
 # 4. Run the demo — no API keys needed
 python -m researcher ask --offline "What is photosynthesis and what are its main stages?"
@@ -119,14 +119,14 @@ The full list is in `.env.example`. **Do not commit a real `.env`.**
 
 | Workload | N | Sequential | Concurrent (sem=3) | Speedup |
 |---|---|---|---|---|
-| 5 sample questions × 3 sources, offline, cache disabled | 15 fetches | 2.42 s | 0.83 s | **2.92×** |
+| 5 sample questions × 3 sources, offline, cache disabled | 15 fetches | 2.27 s | 0.76 s | **2.98×** |
 
 **Reproduce:**
 ```bash
 python scripts/bench.py --offline --runs 3
 ```
 
-The theoretical maximum for three equally-slow sources is 3×. After parallelizing the fetches, the new bottleneck is the **synthesis step**, which is a single LLM call and runs serially in both modes (plus, in live mode, per-provider rate limits enforced by the semaphore). See `report/report.pdf` for details.
+The theoretical maximum for three equally-slow sources is 3×. After parallelizing the fetches, the new bottleneck is the **synthesis step**, which is a single LLM call and runs serially in both modes (plus, in live mode, per-provider rate limits enforced by the semaphore). Full run output is in `artefacts/benchmark.txt`.
 
 ## Testing
 
@@ -150,8 +150,11 @@ pytest --cov
 │   ├── services/
 │   │   ├── ai_service.py      # retries + timeouts + logging around every ai.* call
 │   │   ├── cache.py           # TTL cache with canonical (source, query) keys
-│   │   └── offline.py         # keyless demo service (fake LLM via public llm= param)
-│   ├── core/researcher.py     # business logic: validate -> fetch -> synthesize
+│   │   ├── offline.py         # keyless demo service (fake LLM via public llm= param)
+│   │   └── websearch.py       # working ddgs adapter via ai's public provider= param
+│   ├── core/
+│   │   ├── researcher.py      # business logic: validate -> fetch -> synthesize
+│   │   └── query.py           # query relaxation ladder for empty search results
 │   ├── concurrency/orchestrator.py  # asyncio.gather + semaphore + degradation
 │   ├── storage/cache_store.py # CacheStore ABC: SQLite + in-memory backends
 │   ├── cli.py                 # click CLI + composition root
@@ -159,12 +162,14 @@ pytest --cov
 ├── tests/
 │   ├── test_ai_smoke.py       # PROVIDED contract tests
 │   └── se/                    # our 92 offline tests
+├── ui/                        # optional FastAPI + static frontend (see Web UI)
 ├── data/                      # sample research questions
-├── artefacts/                 # outputs of a full demo run
+├── artefacts/                 # outputs of a full demo run + benchmark results
 ├── scripts/bench.py           # sequential-vs-parallel benchmark
 ├── docs/architecture.md       # architecture diagram + design decisions
+├── .github/workflows/ci.yml   # lint + typecheck + tests + Docker build
 ├── Dockerfile
-├── requirements.txt           # every dependency pinned
+├── requirements.txt           # every dependency pinned (UI extras: requirements-ui.txt)
 ├── .env.example
 └── README.md
 ```
@@ -212,7 +217,7 @@ Full rationale (module boundaries, concurrency model, storage choice, trade-offs
 
 ## Tools & acknowledgements
 
-AI assistants (GitHub Copilot) were used during development, as disclosed in the report and the contribution statement. All commits carry a `Co-authored-by: Copilot` trailer where applicable.
+AI assistants were used during development; each pull request documents what was assisted in its **AI assistant disclosure** section (see `.github/pull_request_template.md`).
 
 ## License
 
