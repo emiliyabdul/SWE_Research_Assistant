@@ -162,3 +162,31 @@ async def test_synthesize_injects_budgeted_llm(
     monkeypatch.setattr("ai.synthesize", capture_synth)
     await AIService(settings).synthesize("q?", [make_source()])
     assert isinstance(seen["llm"], TokenBudgetLLM)
+
+
+@pytest.mark.asyncio
+async def test_synthesize_uses_constructor_injected_llm(
+    settings: Settings, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A per-service LLM (e.g. an OpenRouter model) reaches ai.synthesize,
+    still wrapped in the token-budget adapter."""
+    from ai.providers.base import LLMProvider
+
+    class RecordingLLM(LLMProvider):
+        def __init__(self) -> None:
+            self.prompts: list[str] = []
+
+        def complete(self, prompt: str, *, json_schema: dict | None = None,
+                     max_tokens: int = 1024) -> str:
+            self.prompts.append(prompt)
+            return "answer [1]"
+
+    recording = RecordingLLM()
+
+    def capture_synth(question, sources, *, llm=None):
+        llm.complete("via budget wrapper")
+        return AnswerWithCitations(question=question, answer="a [1]")
+
+    monkeypatch.setattr("ai.synthesize", capture_synth)
+    await AIService(settings, llm=recording).synthesize("q?", [make_source()])
+    assert recording.prompts == ["via budget wrapper"]

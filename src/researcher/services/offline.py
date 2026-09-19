@@ -13,7 +13,7 @@ import asyncio
 import re
 
 from ai.providers.base import LLMProvider
-from ai.schemas import AnswerWithCitations, Source
+from ai.schemas import Source
 from researcher.config import Settings
 from researcher.models import SourceName
 from researcher.services.ai_service import AIService
@@ -48,9 +48,8 @@ class OfflineAIService(AIService):
     """AIService that fabricates sources and answers locally."""
 
     def __init__(self, settings: Settings, *, latency: float = SIMULATED_LATENCY_SECONDS) -> None:
-        super().__init__(settings)
+        super().__init__(settings, llm=OfflineLLM())
         self._latency = latency
-        self._llm = OfflineLLM()
 
     async def fetch(self, source: SourceName, query: str) -> list[Source]:
         await asyncio.sleep(self._latency)
@@ -62,6 +61,3 @@ class OfflineAIService(AIService):
                 origin=source.value,
             )
         ]
-
-    async def synthesize(self, question: str, sources: list[Source], *, llm=None) -> AnswerWithCitations:
-        return await super().synthesize(question, sources, llm=llm or self._llm)

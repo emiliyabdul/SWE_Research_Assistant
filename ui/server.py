@@ -32,6 +32,7 @@ from researcher.cli import parse_sources, run_ask
 from researcher.config import get_settings
 from researcher.core.researcher import InvalidQuestionError
 from researcher.models import ResearchResult
+from researcher.services.openrouter import OPENROUTER_MODELS, openrouter_available
 from researcher.storage.cache_store import create_cache_store
 
 STATIC_DIR = Path(__file__).parent / "static"
@@ -56,6 +57,7 @@ class AskRequest(BaseModel):
     use_cache: bool = True
     sequential: bool = False
     offline: bool = True
+    llm_model: str | None = None  # OpenRouter model id; None = configured provider
 
 
 def result_to_dict(result: ResearchResult) -> dict:
@@ -84,6 +86,27 @@ def read_settings() -> dict:
         "cache_ttl_seconds": s.cache_ttl_seconds,
         "max_concurrent_requests": s.max_concurrent_requests,
         "retry_max_attempts": s.retry_max_attempts,
+    }
+
+
+@app.get("/api/models")
+def read_models() -> dict:
+    """LLM choices for the UI dropdown: the configured default plus any
+    OpenRouter models (marked unavailable when no key is set)."""
+    s = get_settings()
+    available = openrouter_available()
+    return {
+        "models": [
+            {
+                "id": None,
+                "label": f"Default — {s.llm_provider} / {s.llm_model}",
+                "available": True,
+            },
+            *[
+                {"id": model_id, "label": label, "available": available}
+                for model_id, label in OPENROUTER_MODELS.items()
+            ],
+        ]
     }
 
 
@@ -118,6 +141,9 @@ async def ask(req: AskRequest) -> dict:
     except (InvalidQuestionError, ValueError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
+    if req.llm_model is not None and req.llm_model not in OPENROUTER_MODELS:
+        raise HTTPException(status_code=422, detail=f"Unknown model: {req.llm_model}")
+
     try:
         result = await run_ask(
             settings,
@@ -126,6 +152,8 @@ async def ask(req: AskRequest) -> dict:
             use_cache=req.use_cache,
             sequential=req.sequential,
             offline=req.offline,
+            # Offline mode uses the canned LLM; the model choice applies to live runs.
+            llm_model=None if req.offline else req.llm_model,
         )
     except InvalidQuestionError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc

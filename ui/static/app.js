@@ -45,6 +45,7 @@ const el = {
   offline: document.getElementById("offline"),
   useCache: document.getElementById("use-cache"),
   sequential: document.getElementById("sequential"),
+  llmModel: document.getElementById("llm-model"),
   activeConfig: document.getElementById("active-config"),
   sidebar: document.getElementById("sidebar"),
   sidebarBackdrop: document.getElementById("sidebar-backdrop"),
@@ -81,6 +82,30 @@ async function loadSettings() {
     // Non-fatal: the config panel is informational only.
     console.warn("could not load /api/settings", err);
   }
+}
+
+async function loadModels() {
+  try {
+    const res = await fetch("/api/models");
+    if (!res.ok) return;
+    const data = await res.json();
+    el.llmModel.innerHTML = (data.models || [])
+      .map((m) => {
+        const value = m.id === null ? "" : m.id;
+        const suffix = m.available ? "" : " — no API key";
+        return `<option value="${escapeHtml(value)}" ${m.available ? "" : "disabled"}>${escapeHtml(m.label + suffix)}</option>`;
+      })
+      .join("");
+    syncModelSelect();
+  } catch (err) {
+    console.warn("could not load /api/models", err);
+  }
+}
+
+// The model choice applies to live synthesis only; offline runs use the
+// canned LLM, so the select is disabled while offline mode is on.
+function syncModelSelect() {
+  el.llmModel.disabled = el.offline.checked;
 }
 
 async function loadSampleQuestions() {
@@ -364,6 +389,7 @@ async function submitQuestion(question) {
         use_cache: el.useCache.checked,
         sequential: el.sequential.checked,
         offline: el.offline.checked,
+        llm_model: el.offline.checked || !el.llmModel.value ? null : el.llmModel.value,
       }),
     });
 
@@ -487,5 +513,8 @@ el.mascot.addEventListener("click", () => {
   mascotHideTimer = setTimeout(() => el.mascotSpeech.classList.remove("is-visible"), 2600);
 });
 
+el.offline.addEventListener("change", syncModelSelect);
+
 loadSettings();
+loadModels();
 loadSampleQuestions();
