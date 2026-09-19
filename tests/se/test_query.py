@@ -1,8 +1,10 @@
-"""Tests for query relaxation."""
+"""Tests for query relaxation and the SE-layer web-search adapter selection."""
 
 from __future__ import annotations
 
+from researcher.config import Settings
 from researcher.core.query import content_words, relaxation_ladder
+from researcher.services.websearch import DdgsWebSearchProvider, create_web_search_provider
 
 
 def test_content_words_drops_scaffolding() -> None:
@@ -31,3 +33,13 @@ def test_relaxation_ladder_excludes_original() -> None:
     # already keyword-shaped: the full-keyword rung equals the original and is dropped
     ladder = relaxation_ladder("fusion energy")
     assert "fusion energy" not in [c for c in ladder]
+
+
+def test_web_provider_selected_for_duckduckgo() -> None:
+    provider = create_web_search_provider(Settings(web_search_provider="duckduckgo"))
+    assert isinstance(provider, DdgsWebSearchProvider)
+
+
+def test_web_provider_none_for_other_providers() -> None:
+    assert create_web_search_provider(Settings(web_search_provider="tavily")) is None
+    assert create_web_search_provider(Settings(web_search_provider="serper")) is None
