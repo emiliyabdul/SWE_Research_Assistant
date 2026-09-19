@@ -26,6 +26,7 @@ from researcher.models import ResearchResult, SourceName
 from researcher.services.ai_service import AIService
 from researcher.services.cache import SourceCache
 from researcher.services.offline import OfflineAIService
+from researcher.services.openrouter import OPENROUTER_MODELS, create_openrouter_llm
 from researcher.services.websearch import create_web_search_provider
 from researcher.storage.cache_store import create_cache_store
 
@@ -127,8 +128,14 @@ async def run_ask(
     use_cache: bool,
     sequential: bool,
     offline: bool,
+    llm_model: str | None = None,
 ) -> ResearchResult:
-    """Wire the object graph and run one research question."""
+    """Wire the object graph and run one research question.
+
+    ``llm_model`` selects an OpenRouter model for synthesis (see
+    :data:`researcher.services.openrouter.OPENROUTER_MODELS`); ``None`` keeps
+    the provider configured via ``LLM_PROVIDER``. Ignored in offline mode.
+    """
     cache = SourceCache(
         create_cache_store(settings),
         ttl_seconds=settings.cache_ttl_seconds,
@@ -145,6 +152,7 @@ async def run_ask(
                 settings,
                 client=client,
                 web_provider=create_web_search_provider(settings),
+                llm=create_openrouter_llm(llm_model) if llm_model else None,
             )
             researcher = Researcher(settings, ResearchOrchestrator(settings, ai_service, cache), ai_service)
             return await researcher.run(question, sources, sequential=sequential)
@@ -168,9 +176,11 @@ def cli() -> None:
 @click.option("--no-cache", is_flag=True, help="Bypass the TTL cache for this run.")
 @click.option("--sequential", is_flag=True, help="Fetch sources one at a time (benchmark aid).")
 @click.option("--offline", is_flag=True, help="Run without API keys or network (canned sources, fake LLM).")
+@click.option("--model", "llm_model", default=None, type=click.Choice(sorted(OPENROUTER_MODELS)),
+              help="Synthesize with an OpenRouter model instead of the configured provider.")
 @click.option("--json", "as_json", is_flag=True, help="Emit the result as JSON on stdout.")
 def ask(question: str, sources_spec: str | None, no_cache: bool, sequential: bool,
-        offline: bool, as_json: bool) -> None:
+        offline: bool, llm_model: str | None, as_json: bool) -> None:
     """Research QUESTION across Wikipedia, arXiv and the web, with citations."""
     settings = get_settings()
     setup_logging(settings.log_level.value)
@@ -183,7 +193,8 @@ def ask(question: str, sources_spec: str | None, no_cache: bool, sequential: boo
     try:
         result = asyncio.run(
             run_ask(settings, question, sources,
-                    use_cache=not no_cache, sequential=sequential, offline=offline)
+                    use_cache=not no_cache, sequential=sequential, offline=offline,
+                    llm_model=llm_model)
         )
     except InvalidQuestionError as exc:
         raise click.UsageError(str(exc)) from exc

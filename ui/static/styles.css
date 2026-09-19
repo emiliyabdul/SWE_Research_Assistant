@@ -443,6 +443,28 @@ textarea {
   font-size: 13px;
 }
 
+.model-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: 13px;
+}
+
+.model-select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.model-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .switch {
   position: relative;
   display: inline-block;

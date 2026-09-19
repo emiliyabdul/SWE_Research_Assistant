@@ -94,10 +94,12 @@ class AIService:
         *,
         client: httpx.AsyncClient | None = None,
         web_provider: WebSearchProvider | None = None,
+        llm: LLMProvider | None = None,
     ) -> None:
         self._settings = settings
         self._client = client
         self._web_provider = web_provider
+        self._llm = llm
 
     def _retrying(self) -> AsyncRetrying:
         s = self._settings
@@ -181,7 +183,10 @@ class AIService:
         """Synthesize a cited answer; the blocking LLM call runs in a thread."""
 
         async def call() -> AnswerWithCitations:
-            provider = llm if llm is not None else TokenBudgetLLM(self._settings.llm_max_tokens)
+            # Per-call override > constructor-injected provider > configured
+            # default; the token budget wrapper applies in every case.
+            inner = llm if llm is not None else self._llm
+            provider = TokenBudgetLLM(self._settings.llm_max_tokens, inner=inner)
             return await asyncio.to_thread(ai.synthesize, question, sources, llm=provider)
 
         result = await self._call_with_policy(
