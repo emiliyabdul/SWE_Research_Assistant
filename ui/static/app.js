@@ -20,7 +20,10 @@ function sourceEmoji(origin) {
 }
 
 const state = {
-  history: [], // [{ question, result }], newest first
+  // One entry per conversation: { title, turns: [{ question, result }] },
+  // newest conversation first; turns in ask order. A question starts a new
+  // conversation only when none is active (fresh load or "New chat").
+  history: [],
   activeIndex: null,
   filter: "",
 };
@@ -118,7 +121,11 @@ function renderHistory() {
   const needle = state.filter.trim().toLowerCase();
 
   state.history.forEach((entry, i) => {
-    if (needle && !entry.question.toLowerCase().includes(needle)) return;
+    const matches =
+      !needle ||
+      entry.title.toLowerCase().includes(needle) ||
+      entry.turns.some((t) => t.question.toLowerCase().includes(needle));
+    if (!matches) return;
 
     const item = document.createElement("div");
     item.className = "history__item" + (i === state.activeIndex ? " is-active" : "");
@@ -126,8 +133,8 @@ function renderHistory() {
     const label = document.createElement("button");
     label.type = "button";
     label.className = "history__label";
-    label.textContent = entry.question;
-    label.title = entry.question;
+    label.textContent = entry.title;
+    label.title = entry.title;
     label.addEventListener("click", () => {
       state.activeIndex = i;
       renderConversation();
@@ -139,7 +146,7 @@ function renderHistory() {
     del.type = "button";
     del.className = "history__delete";
     del.textContent = "×";
-    del.setAttribute("aria-label", "Delete this question");
+    del.setAttribute("aria-label", "Delete this conversation");
     del.addEventListener("click", (event) => {
       event.stopPropagation();
       state.history.splice(i, 1);
@@ -219,7 +226,7 @@ function sparkleBurst(container) {
   }
 }
 
-function renderResult(question, result, index) {
+function renderResult(question, result, convIndex, turnIndex) {
   const userMsg = document.createElement("div");
   userMsg.className = "msg msg--user";
   userMsg.innerHTML = `<div class="bubble">${escapeHtml(question)}</div>`;
@@ -272,7 +279,7 @@ function renderResult(question, result, index) {
       ${renderCitationsBox(result.answer)}
       ${renderSourceTable(result)}
 
-      <button type="button" class="btn btn--ghost download-btn" data-history-index="${index}">
+      <button type="button" class="btn btn--ghost download-btn" data-history-index="${convIndex}" data-turn-index="${turnIndex}">
         Download result as JSON
       </button>
     </div>
@@ -295,7 +302,9 @@ function renderConversation() {
     return;
   }
   const entry = state.history[state.activeIndex];
-  renderResult(entry.question, entry.result, state.activeIndex);
+  entry.turns.forEach((turn, turnIndex) => {
+    renderResult(turn.question, turn.result, state.activeIndex, turnIndex);
+  });
 }
 
 function downloadJson(filename, dataObj) {
@@ -315,7 +324,9 @@ el.messages.addEventListener("click", (event) => {
   if (!btn) return;
   const entry = state.history[Number(btn.dataset.historyIndex)];
   if (!entry) return;
-  downloadJson("research_result.json", entry.result);
+  const turn = entry.turns[Number(btn.dataset.turnIndex)];
+  if (!turn) return;
+  downloadJson("research_result.json", turn.result);
 });
 
 function showTyping() {
@@ -365,8 +376,14 @@ async function submitQuestion(question) {
     }
 
     const result = await res.json();
-    state.history.unshift({ question, result });
-    state.activeIndex = 0;
+    // Append to the active conversation; start a new one only when no
+    // conversation is active (fresh load or after "New chat").
+    if (state.activeIndex === null || !state.history[state.activeIndex]) {
+      state.history.unshift({ title: question, turns: [{ question, result }] });
+      state.activeIndex = 0;
+    } else {
+      state.history[state.activeIndex].turns.push({ question, result });
+    }
     renderHistory();
     renderConversation();
   } catch (err) {
