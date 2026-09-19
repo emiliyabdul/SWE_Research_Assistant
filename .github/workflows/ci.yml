@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main, prototype]
+
+jobs:
+  lint-and-types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install --no-deps -e .
+          pip install ruff mypy
+      - name: Lint (ruff)
+        run: ruff check src tests scripts
+      - name: Type-check (mypy)
+        run: mypy src/researcher
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install --no-deps -e .
+      - name: Tests with coverage gate (>=60%)
+        run: pytest --cov --cov-fail-under=60 -q
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t researcher .
+      - name: Offline demo runs end-to-end
+        run: docker run --rm researcher
+      - name: Run the suite in-container
+        run: docker run --rm researcher python -m pytest tests -q
