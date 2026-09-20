@@ -1,0 +1,38 @@
+# Render blueprint — deploys the web UI as a free web service.
+#
+# Usage: Render Dashboard -> New -> Blueprint -> select this repository.
+# Render reads this file, creates the service, and prompts for the two
+# secret keys (sync: false) — real values live only in Render's dashboard,
+# never in the repository.
+#
+# Free-plan notes: the service spins down after 15 idle minutes (first
+# request after that takes ~1 min) and the filesystem is ephemeral, so the
+# cache backend is set to memory. Offline mode works with no keys at all.
+
+services:
+  - type: web
+    name: research-assistant
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt -r requirements-ui.txt && pip install --no-deps .
+    startCommand: uvicorn ui.server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: CACHE_BACKEND
+        value: memory
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: LLM_MODEL
+        value: gemini-3.6-flash
+      - key: WEB_SEARCH_PROVIDER
+        value: duckduckgo
+      - key: LLM_TIMEOUT_SECONDS
+        value: "90"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false

@@ -28,7 +28,7 @@ RUN pip install --no-deps .
 FROM python:3.14-alpine
 
 LABEL org.opencontainers.image.title="Async Research Assistant (AI-ENG-110 Final Project)"
-LABEL org.opencontainers.image.source="https://github.com/Azeri40/swe_final_new"
+LABEL org.opencontainers.image.source="https://github.com/emiliyabdul/SWE_Research_Assistant"
 LABEL org.opencontainers.image.version="0.1.0"
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
